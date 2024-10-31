@@ -38,6 +38,8 @@ function getContent(note: SNote) {
         renderFile(note, result);
     } else if (note.type === 'book') {
         result.isEmpty = true;
+    } else if (note.type === 'render') {
+        renderHtml(result, note);
     } else {
         result.content = '<p>This note type cannot be displayed.</p>';
     }
@@ -168,6 +170,22 @@ function renderFile(note: SNote, result: Result) {
     } else {
         result.content = `<button type="button" onclick="location.href='api/notes/${note.noteId}/download'">Download file</button>`;
     }
+}
+
+function renderHtml(result: Result, note: SNote) {
+    var renderNote = note.getRelation("renderNote");
+    if (!renderNote) {
+        result.isEmpty = true;
+        return;
+    }
+
+    var targetNote = renderNote.targetNote;
+    if (!targetNote) {
+        result.isEmpty = true;
+        return;
+    }
+
+    result.content = targetNote.getContent();
 }
 
 export default {
